@@ -44,7 +44,7 @@ public class TodoController {
 
 			// service.create를 통해 repository에 entity를 저장한다.
 			// 이떄 넘어오는 값이 없을수도 있으므로 List가 아닌 Optional로 한다.
-			Optional<TodoEntity> entities = service.create(entity);
+			List<TodoEntity> entities = service.create(entity);
 			log.info("Log: : service.create ok!");
 
 			// entities를 dtos로 스트림 변환한다.
@@ -84,7 +84,7 @@ public class TodoController {
 
 			// service.create를 통해 repository에 entity를 저장한다.
 			// 이때 넘어오는 값이 없을수도 있으므로 List가 아닌 Optional을 쓴다.
-			Optional<TodoEntity> entities = service.update(entity);
+			List<TodoEntity> entities = service.update(entity);
 
 			// entities를 dtos로 스트림 변환한다.
 			List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
@@ -110,7 +110,7 @@ public class TodoController {
 
 			// service.create를 통해 repository에 entity를 저장한다.
 			// 이때 넘어오는 값이 없을수도 있으므로 List가 아닌 Optional을 쓴다.
-			Optional<TodoEntity> entities = service.updateTodo(entity);
+			List<TodoEntity> entities = service.updateTodo(entity);
 
 			// entities를 dtos로 스트림 변환한다.
 			List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
@@ -133,8 +133,12 @@ public class TodoController {
 			message.add(msg);
 
 			// Response DTO를 생성한다
-			ResponseDTO<String> response = ResponseDTO.<String>builder().data(message).build();
+			String temporaryUserId = "temporary-userid";
+			List<TodoEntity> entities = service.retrieve(temporaryUserId);
+			List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+			ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
 
+			System.out.println(response);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 			String error = e.getMessage();

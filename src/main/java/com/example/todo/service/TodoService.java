@@ -17,28 +17,28 @@ public class TodoService {
 	@Autowired
 	private TodoRepository repository;
 
-	public Optional<TodoEntity> create(final TodoEntity entity) {
+	public List<TodoEntity> create(final TodoEntity entity) {
 		// Validations
 		validate(entity);
 		repository.save(entity);
-		return repository.findById(entity.getId());
+		return repository.findByUserId(entity.getUserId());
 	}
 
 	public List<TodoEntity> retrieve(final String userId) {
 		return repository.findByUserId(userId);
 	}
 
-	public Optional<TodoEntity> update(final TodoEntity entity) {
+	public List<TodoEntity> update(final TodoEntity entity) {
 		// Validations
 		validate(entity);
 		if (repository.existsById(entity.getId())) {
 			repository.save(entity);
 		} else
 			throw new RuntimeException("Unkown id");
-		return repository.findById(entity.getId());
+		return repository.findByUserId(entity.getUserId());
 	}
 
-	public Optional<TodoEntity> updateTodo(final TodoEntity entity) {
+	public List<TodoEntity> updateTodo(final TodoEntity entity) {
 		// Validations
 		validate(entity);
 
@@ -52,7 +52,7 @@ public class TodoService {
 			repository.save(todo);
 		});
 
-		return repository.findById(entity.getId());
+		return repository.findByUserId(entity.getUserId());
 	}
 	
 	public String delete(final String id) {
