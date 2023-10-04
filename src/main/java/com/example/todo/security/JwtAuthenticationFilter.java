@@ -30,13 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
+			// 리퀘스트에서 토큰 가져오기
 			String token = parseBearerToken(request);
 			log.info("Filter is running...");
 
+			// 토큰 검사하기. JWT이므로 인가서버에 요청하지 않고도 검증 가능
 			if (token != null && !token.equalsIgnoreCase("null")) {
+				// userId 가져오기. 위조된 경우 예외처리 된다.
 				String userId = tokenProvider.validateAndGetUserId(token);
 				log.info("Authenticated user ID : " + userId);
 
+				// 인증 완료; SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
 				AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null,
 						AuthorityUtils.NO_AUTHORITIES);
 
@@ -53,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	}
 
 	private String parseBearerToken(HttpServletRequest request){
+		// Http 리퀘스트의 헤더를 파싱해 Bearer 토큰을 리턴한다.
 		String bearerToken = request.getHeader("Authorization");
 		if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
 			return bearerToken.substring(7);
