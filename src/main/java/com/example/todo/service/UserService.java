@@ -36,4 +36,12 @@ public class UserService {
 		}
 		return null;
 	}
+	
+	public UserEntity getUserEntity(final String email) {
+		return userRepository.findByEmail(email);
+	}
+	
+	public void userEdit(final UserEntity userEntity) {
+		userRepository.save(userEntity);
+	}
 }

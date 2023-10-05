@@ -1,5 +1,8 @@
 package com.example.todo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -71,5 +74,29 @@ public class UserController {
 					.build();
 			return ResponseEntity.badRequest().body(responseDTO);
 		}
+	}
+	
+	@PostMapping("/edit")
+	public ResponseEntity<?> editUserInfo(@RequestBody UserDTO userDTO) {
+		 // 이전 유저 id 탐색
+        String beforeUserId = userService.getUserEntity(userDTO.getEmail().toString()).getId();
+
+        // 유저 id를 추가해서 Entity 생성
+        UserEntity userInfo = UserEntity.builder()
+                .id(beforeUserId)
+                .email(userDTO.getEmail())
+                .username(userDTO.getUsername())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .build();
+
+        // 유저 정보 업데이트하기
+        userService.userEdit(userInfo);
+        
+        // JSON 오류 해결을 위한 메시지 전송
+        List<String> message = new ArrayList<>();
+        message.add("Edit Success");
+        ResponseDTO<String> response = ResponseDTO.<String>builder().data(message).build();
+        
+        return ResponseEntity.ok().body(response);
 	}
 }
